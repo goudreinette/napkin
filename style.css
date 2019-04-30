@@ -1,0 +1,145 @@
+
+@import url('https://fonts.googleapis.com/css?family=Fira+Mono');
+
+
+* {
+    font-family: 'Fira Mono';
+    box-sizing: border-box;
+}
+#napkin {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    max-width: 800px;
+    grid-template-rows: 1fr auto;
+    margin: auto;
+    grid-gap: 0;
+}
+
+.editor {
+    width: calc(100% - 30px) !important;
+    display: flex;
+    /* border-width: 1px 0 1px 1px; */
+    min-height: 500px;
+    /* border-style: solid; */
+    /* border-color: #eee; */
+}
+
+.editor, #answers {
+
+    font-size: 14px;
+    line-height: 1.5 !important;
+    outline: none;
+    padding: 30px 2px;
+    grid-row: 2;
+}
+
+.editor .ace_scroller {
+    /* padding: 30px 0 30px 30px; */
+    left: 0 !important;
+}
+
+#answers .no-result {
+    visibility: hidden;
+}
+
+#answers {
+    display: flex;
+    background: #eee;
+    border: 1px solid #eee;
+    flex-direction: column;
+    padding-right: 30px;
+    padding-left: 30px;
+}
+
+body {
+    padding: 15px;
+}
+
+input {
+    height: 60px;
+    font-size: 24px;
+    border: 1px solid #eee;
+    outline: none;
+    width: 100%;
+}
+
+#sum {
+    margin-top: auto;
+    font-weight: bold;
+    padding-top: 14px;
+    /* margin-left: 0; */
+    border-top: 1px solid #ccc;
+}
+
+input, .editor {
+    padding-left: 30px;
+    border-radius: 0;
+    box-shadow: none;
+    -webkit-appearance: none;
+
+}
+
+#napkin:not(.loaded) {
+    opacity: 0;
+}
+
+#napkin.loaded {
+    opacity: 1;
+}
+
+
+@media(max-width: 600px) {
+    body {
+        padding: 0 !important;
+        margin: 0;
+    }
+    input{
+        font-size: 18px;
+    }
+
+    input, .editor, #answers {
+        padding-left: 20px;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    h1 {
+        width: 100%;
+        grid-column: 1 / span 2;
+    }
+
+    .editor {
+        margin-left: 20px !important;
+        width: calc(100% - 20px) !important;
+    }
+}
+
+.editor-container {
+    border-width: 1px 0 1px 1px;
+    min-height: 500px;
+    border-style: solid;
+    border-color: #eee;
+    grid-column: 1;
+    grid-row: 2;
+    padding-left: 0;
+}
+
+.ace_gutter-cell.ace_gutter-active-line.ace_error {
+    display: none;
+}
+
+.ace_layer.ace_gutter-layer.ace_folding-enabled {
+    display: none !important;
+}
+
+.ace_gutter {
+    display: none;
+}
+
+.ace_scroller {
+    left: 0;
+}
+
+.editor {
+    margin: 30px;
+}

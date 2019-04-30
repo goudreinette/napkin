@@ -1,0 +1,134 @@
+<!-- Links -->
+<link rel="stylesheet" href="./style.css">
+<link rel=apple-touch-icon href=icon.png>
+<link rel=apple-touch-startup-image href=launch.png>
+<link rel=mask-icon href=firebase-icon.png color=#4DBA87>
+
+<!-- Scripts -->
+<script src="https://www.gstatic.com/firebasejs/5.10.1/firebase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vuefire/2.0.0-alpha.22/vuefire.js"></script>
+<script src="https://rawgit.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"></script>
+<script src="./editor.js"></script>
+<script src="./firebaseConfig.js"></script>
+
+<!-- Meta's -->
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes">
+<meta name=apple-mobile-web-app-capable content=yes>
+<meta name=apple-mobile-web-app-status-bar-style content=default>
+
+
+<!-- Template -->
+<div id="napkin"  v-if="napkin && napkin.lines" :class="{loaded: napkin}">
+    <title>{{napkin.name}} - Napkin</title>
+    <meta name=apple-mobile-web-app-title :content="napkin.name">
+    <h1>
+        <input tabindex="-1" :value="napkin.name" @keyup="updateName($event.target.value)" placeholder="Untitled napkin...">
+    </h1>
+
+    <div class="editor-container">
+        <editor editor-id="editorA" :content="napkin.lines.join('\n')" lang="js" v-on:change-content="updateLines"></editor>
+    </div>
+
+    <div id="answers">
+        <div class="answer" v-for="line in napkin.lines" v-html="eval(line)"></div>
+        <div id="sum">
+            {{sum}}
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig)
+
+    Vue.use(Vuefire.firestorePlugin)
+
+    const napkinsCollection  = firebase.firestore().collection('napkins')
+    let napkinRef
+
+    napkinsCollection.get().then(snapshot => {
+        if (location.hash.slice(1)) {
+            napkinRef = napkinsCollection.doc(location.hash.slice(1))
+        } else {
+            location.hash = snapshot.size.toString()
+            napkinRef = napkinsCollection.doc(snapshot.size.toString())
+            napkinRef.set({
+                name: '',
+                lines: []
+            })
+        }
+
+
+
+        $napkin = new Vue({
+            el: '#napkin',
+            firestore: {
+                napkin: napkinRef
+            },
+
+            data: {
+                napkin: {},
+            },
+
+            mounted() {
+
+            },
+
+            watch:  {
+            },
+
+            methods: {
+                updateLines(v) {
+                    napkinRef.update({
+                        lines: v.split('\n')
+                    })
+                },
+
+                updateName(name) {
+                    napkinRef.update({name})
+                },
+
+                eval(l) {
+                    try {
+                        let prepped = l.replace(/([a-z]|[A-Z])+/g, '')
+                        console.log(prepped)
+                        let answ = eval(prepped)
+                        if (answ != null && answ != undefined) {
+                            return answ
+                        } else {
+                            return "<span class='no-result'>-</span>"
+                        }
+                    } catch(e) {
+                        return "<span class='no-result'>-</span>"
+                    }
+                },
+
+                evalSum(l) {
+                    try {
+                        let prepped = l.replace(/([a-z]|[A-Z])+/g, '')
+                        let answ = eval(prepped)
+                        if (answ != null && answ != undefined) {
+                            return answ
+                        } else {
+                            return 0
+                        }
+                    } catch(e) {
+                        return 0
+                    }
+                }
+            },
+
+            computed: {
+                sum() {
+                    let result = 0
+                    for (const line of this.napkin.lines) {
+                        result += this.evalSum(line)
+                    }
+                    return result
+                }
+            }
+        })
+    })
+</script>
